@@ -1,6 +1,7 @@
 import pygame
 import  time
-
+from random import randint
+from random import seed
 pygame.init()
 
 """
@@ -313,10 +314,13 @@ def button_click():
             if not(bubble_back.clicked) and bubble_back.isOver(pos):
                 bubble_to_main()
             elif not(little_button.clicked) and little_button.isOver(pos):
+                alg.counter = LITTLE
                 all_buttons_true()
             elif not(medium_button.clicked) and medium_button.isOver(pos):
+                alg.counter = MIDDLE
                 all_buttons_true()
             elif not(a_lot_button.clicked) and a_lot_button.isOver(pos):
+                alg.counter = A_LOT
                 all_buttons_true()
 """
 This function sets the value of all the buttons to be true so that they cannot be clicked while the animation
@@ -336,13 +340,15 @@ def all_buttons_false():
     medium_button.clicked = False
     a_lot_button.clicked = False
     bubble_back.clicked = False
-def array(size):
-    pass
+def array(temp_arr):
+    for i in range(alg.counter):
+        temp_arr.append(randint(0,10))
 
 def bubble_to_main():
     #Set the size to 0
     bubble_sort.clicked = False
     all_buttons_false()
+    alg.counter = 0
 
 
 def bubble_sort_window():
@@ -392,6 +398,8 @@ next_stop = node(200)
 arrow_counter = counter(110)
 
 next_stop.animation = True
+
+alg = counter(0)
 
 little_button = button(RED,250,10,350,100,'little')
 medium_button = button(RED,610,10,350,100,'medium')
