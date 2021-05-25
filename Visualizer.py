@@ -31,6 +31,12 @@ A_LOT = 10
 ARROW_HEIGHT = 50
 ARROW_LENGTH = 100
 
+
+BUBBLE_DRAWER_Y = 400
+
+ARRAY_LENGTH = 100
+ARRAY_HEIGHT = 65
+
 CONNECTOR_LENGTH = 400
 
 CURR_PLACE = (10,10)
@@ -223,7 +229,6 @@ def click_back():
     temp_x_connector.amnt = 110
     temp_y_connector.amnt = 525
 
-
 def over():
     if event.type == pygame.MOUSEMOTION:
         if linked_list.clicked == True:
@@ -325,6 +330,7 @@ def button_click():
                 alg.amnt = A_LOT
                 all_buttons_true()
                 array(bubble_array)
+            print(bubble_array)
 """
 This function sets the value of all the buttons to be true so that they cannot be clicked while the animation
 is taking place.
@@ -355,15 +361,31 @@ def bubble_to_main():
     bubble_array = []
 
 
+def array_drawer():
+    for i in range(1,alg.amnt+1):
+        if bubble_array[i-1] != 0:
+            pygame.draw.rect(win,LIGHT_PINK,(bubble_drawer_x.amnt,BUBBLE_DRAWER_Y,ARRAY_LENGTH,ARRAY_HEIGHT*bubble_array[i-1]),0)
+            bubble_drawer_x.amnt+=ARRAY_LENGTH+10
+    bubble_drawer_x.amnt = 360
+
+
 def bubble_sort_window():
     win.fill(DARK_GREEN)
     medium_button.draw(win)
     a_lot_button.draw(win)
     little_button.draw(win)
     bubble_back.draw(win)
-    print(bubble_array)
+    if alg.amnt > 0:
+        bubble_sort_alg()
 
-
+def bubble_sort_alg():
+    n = len(bubble_array)
+    for i in range(n-1):
+        for j in range(0,n-i-1):
+            time.sleep(0.1)
+            if bubble_array[j] > bubble_array[j+1]:
+                bubble_array[j] , bubble_array[j+1] = bubble_array[j+1], bubble_array[j]
+            array_drawer()
 """
 Creating all the variables and objects that I will be using in my program
 """
@@ -404,6 +426,9 @@ arrow_counter = counter(110)
 next_stop.animation = True
 
 alg = counter(0)
+
+bubble_drawer_x = counter(360)
+
 
 bubble_array = []
 
