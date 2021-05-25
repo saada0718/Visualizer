@@ -314,14 +314,17 @@ def button_click():
             if not(bubble_back.clicked) and bubble_back.isOver(pos):
                 bubble_to_main()
             elif not(little_button.clicked) and little_button.isOver(pos):
-                alg.counter = LITTLE
+                alg.amnt = LITTLE
                 all_buttons_true()
+                array(bubble_array)
             elif not(medium_button.clicked) and medium_button.isOver(pos):
-                alg.counter = MIDDLE
+                alg.amnt = MIDDLE
                 all_buttons_true()
+                array(bubble_array)
             elif not(a_lot_button.clicked) and a_lot_button.isOver(pos):
-                alg.counter = A_LOT
+                alg.amnt = A_LOT
                 all_buttons_true()
+                array(bubble_array)
 """
 This function sets the value of all the buttons to be true so that they cannot be clicked while the animation
 is taking place.
@@ -341,7 +344,7 @@ def all_buttons_false():
     a_lot_button.clicked = False
     bubble_back.clicked = False
 def array(temp_arr):
-    for i in range(alg.counter):
+    for i in range(alg.amnt):
         temp_arr.append(randint(0,10))
 
 def bubble_to_main():
@@ -349,6 +352,7 @@ def bubble_to_main():
     bubble_sort.clicked = False
     all_buttons_false()
     alg.counter = 0
+    bubble_array = []
 
 
 def bubble_sort_window():
@@ -357,7 +361,7 @@ def bubble_sort_window():
     a_lot_button.draw(win)
     little_button.draw(win)
     bubble_back.draw(win)
-
+    print(bubble_array)
 
 
 """
@@ -400,6 +404,8 @@ arrow_counter = counter(110)
 next_stop.animation = True
 
 alg = counter(0)
+
+bubble_array = []
 
 little_button = button(RED,250,10,350,100,'little')
 medium_button = button(RED,610,10,350,100,'medium')
