@@ -48,7 +48,16 @@ DARK_GREEN = (53,98,68)
 Creating the window
 """
 win = pygame.display.set_mode((LENGTH, HEIGHT))
+"""
+What this class will do is that it will hold the location of that specific array
+on the window and it will have the amount as well.
+"""
 
+class array_attribute():
+    def __init__(self,amnt,x,y):
+        self.amnt = amnt
+        self.x = x
+        self.y = y
 
 """
 The function of this class is to act as an int variable so that we can change values through functions
@@ -320,17 +329,26 @@ def button_click():
                 bubble_to_main()
             elif not(little_button.clicked) and little_button.isOver(pos):
                 alg.amnt = LITTLE
-                all_buttons_true()
-                array(bubble_array)
+                array()
+                bubble_sort_alg()
             elif not(medium_button.clicked) and medium_button.isOver(pos):
                 alg.amnt = MIDDLE
-                all_buttons_true()
-                array(bubble_array)
+                array()
+                bubble_sort_alg()
             elif not(a_lot_button.clicked) and a_lot_button.isOver(pos):
                 alg.amnt = A_LOT
-                all_buttons_true()
-                array(bubble_array)
-            print(bubble_array)
+                array()
+                bubble_sort_alg()
+            bubble_final()
+
+
+def bubble_final():
+    print("We have made it into the function")
+    bubble_sort_window()
+    array_drawer()
+    pygame.display.update()
+
+
 """
 This function sets the value of all the buttons to be true so that they cannot be clicked while the animation
 is taking place.
@@ -349,24 +367,30 @@ def all_buttons_false():
     medium_button.clicked = False
     a_lot_button.clicked = False
     bubble_back.clicked = False
-def array(temp_arr):
+
+
+def array():
+    loc = 360
     for i in range(alg.amnt):
-        temp_arr.append(randint(0,10))
+        bubble_array.append(array_attribute(randint(0,10),loc,BUBBLE_DRAWER_Y))
+        loc+=ARRAY_LENGTH+10
+
 
 def bubble_to_main():
     #Set the size to 0
     bubble_sort.clicked = False
     all_buttons_false()
+    _reset()
+
+
+def _reset():
     alg.counter = 0
     bubble_array = []
 
 
 def array_drawer():
-    for i in range(1,alg.amnt+1):
-        if bubble_array[i-1] != 0:
-            pygame.draw.rect(win,LIGHT_PINK,(bubble_drawer_x.amnt,BUBBLE_DRAWER_Y,ARRAY_LENGTH,ARRAY_HEIGHT*bubble_array[i-1]),0)
-            bubble_drawer_x.amnt+=ARRAY_LENGTH+10
-    bubble_drawer_x.amnt = 360
+    for i in range(len(bubble_array)):
+        pygame.draw.rect(win,LIGHT_PINK,(bubble_array[i].x,bubble_array[i].y,ARRAY_LENGTH,bubble_array[i].amnt*ARRAY_HEIGHT),0)
 
 
 def bubble_sort_window():
@@ -375,17 +399,44 @@ def bubble_sort_window():
     a_lot_button.draw(win)
     little_button.draw(win)
     bubble_back.draw(win)
-    if alg.amnt > 0:
-        bubble_sort_alg()
+    pygame.display.set_caption('Bubble Sort')
+
+
 
 def bubble_sort_alg():
     n = len(bubble_array)
     for i in range(n-1):
         for j in range(0,n-i-1):
-            time.sleep(0.1)
-            if bubble_array[j] > bubble_array[j+1]:
+            if bubble_array[j].amnt > bubble_array[j+1].amnt:
+                """
+                print("Before")
+                print(bubble_array[j].x)
+                print(bubble_array[j+1].x)
+                """
+                if bubble_array[j].x > bubble_array[j+1].x:
+                    first = bubble_array[j].x
+                    while bubble_array[j+1].x < first:
+                        bubble_array[j+1].x+=5
+                        bubble_array[j].x-=5
+                        bubble_sort_window()
+                        array_drawer()
+                        pygame.display.update()
+                else:
+                    first = bubble_array[j+1].x
+                    while bubble_array[j].x<first:
+                        bubble_array[j].x+=5
+                        bubble_array[j+1].x-=5
+                        bubble_sort_window()
+                        array_drawer()
+                        pygame.display.update()
+                """
+                print("After")
+                print(bubble_array[j].x)
+                print(bubble_array[j+1].x)
+                """
                 bubble_array[j] , bubble_array[j+1] = bubble_array[j+1], bubble_array[j]
-            array_drawer()
+    all_buttons_false()
+
 """
 Creating all the variables and objects that I will be using in my program
 """
@@ -443,6 +494,12 @@ while run:
     if linked_list.clicked:
         linked_list_window()
     elif bubble_sort.clicked:
+        
+        """
+        Change this
+        
+        
+        """
         bubble_sort_window()
     else:
         redrawWindow()
