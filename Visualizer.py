@@ -339,14 +339,7 @@ def button_click():
                 alg.amnt = A_LOT
                 array()
                 bubble_sort_alg()
-            bubble_final()
 
-
-def bubble_final():
-    print("We have made it into the function")
-    bubble_sort_window()
-    array_drawer()
-    pygame.display.update()
 
 
 """
@@ -372,7 +365,7 @@ def all_buttons_false():
 def array():
     loc = 360
     for i in range(alg.amnt):
-        bubble_array.append(array_attribute(randint(0,10),loc,BUBBLE_DRAWER_Y))
+        bubble_array[i] = array_attribute(randint(0,10),loc,BUBBLE_DRAWER_Y)
         loc+=ARRAY_LENGTH+10
 
 
@@ -380,16 +373,11 @@ def bubble_to_main():
     #Set the size to 0
     bubble_sort.clicked = False
     all_buttons_false()
-    _reset()
-
-
-def _reset():
-    alg.counter = 0
-    bubble_array = []
+    alg.amnt = 0
 
 
 def array_drawer():
-    for i in range(len(bubble_array)):
+    for i in range(alg.amnt):
         pygame.draw.rect(win,LIGHT_PINK,(bubble_array[i].x,bubble_array[i].y,ARRAY_LENGTH,bubble_array[i].amnt*ARRAY_HEIGHT),0)
 
 
@@ -400,19 +388,17 @@ def bubble_sort_window():
     little_button.draw(win)
     bubble_back.draw(win)
     pygame.display.set_caption('Bubble Sort')
+    array_drawer()
+    pygame.display.update()
 
 
 
 def bubble_sort_alg():
-    n = len(bubble_array)
+    n = alg.amnt
     for i in range(n-1):
         for j in range(0,n-i-1):
             if bubble_array[j].amnt > bubble_array[j+1].amnt:
-                """
-                print("Before")
-                print(bubble_array[j].x)
-                print(bubble_array[j+1].x)
-                """
+
                 if bubble_array[j].x > bubble_array[j+1].x:
                     first = bubble_array[j].x
                     while bubble_array[j+1].x < first:
@@ -429,11 +415,7 @@ def bubble_sort_alg():
                         bubble_sort_window()
                         array_drawer()
                         pygame.display.update()
-                """
-                print("After")
-                print(bubble_array[j].x)
-                print(bubble_array[j+1].x)
-                """
+
                 bubble_array[j] , bubble_array[j+1] = bubble_array[j+1], bubble_array[j]
     all_buttons_false()
 
@@ -481,7 +463,7 @@ alg = counter(0)
 bubble_drawer_x = counter(360)
 
 
-bubble_array = []
+bubble_array = [None]*A_LOT
 
 little_button = button(RED,250,10,350,100,'little')
 medium_button = button(RED,610,10,350,100,'medium')
@@ -494,12 +476,6 @@ while run:
     if linked_list.clicked:
         linked_list_window()
     elif bubble_sort.clicked:
-        
-        """
-        Change this
-        
-        
-        """
         bubble_sort_window()
     else:
         redrawWindow()
