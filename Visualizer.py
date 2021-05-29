@@ -18,7 +18,7 @@ LIME = (204,255,0)
 PURPLE = (255,255,255)
 BLACK = (0,0,0)
 WHITE = (255,255,255)
-
+YELLOW = (255,255,0)
 
 RED = (255,0,0)
 NODE_WIDTH = 100
@@ -293,6 +293,16 @@ def over():
 
 
 
+        if maze_generator.clicked:
+            if maze_back.isOver(pos):
+                maze_back.color = YELLOW
+            else:
+                maze_back.color = WHITE
+
+            if create.isOver(pos):
+                create.color = YELLOW
+            else:
+                create.color = WHITE
 def button_click():
     if event.type == pygame.MOUSEBUTTONDOWN:
         if not(first_node.animation):
@@ -305,7 +315,7 @@ def button_click():
         if linked_list.isOver(pos):
             linked_list.clicked = True
         if maze_generator.isOver(pos):
-            pass
+            maze_generator.clicked = True
         if not(first_node.animation) and first_node.amnt < 10:
             if add_linked_list.isOver(pos):
                 first_node.amnt+=1
@@ -328,19 +338,35 @@ def button_click():
             if not(bubble_back.clicked) and bubble_back.isOver(pos):
                 bubble_to_main()
             elif not(little_button.clicked) and little_button.isOver(pos):
+                all_buttons_true()
                 alg.amnt = LITTLE
                 array()
                 bubble_sort_alg()
             elif not(medium_button.clicked) and medium_button.isOver(pos):
+                all_buttons_true()
                 alg.amnt = MIDDLE
                 array()
                 bubble_sort_alg()
             elif not(a_lot_button.clicked) and a_lot_button.isOver(pos):
+                all_buttons_true()
                 alg.amnt = A_LOT
                 array()
                 bubble_sort_alg()
+            all_buttons_false()
+
+        if maze_generator.clicked:
+            if maze_back.isOver(pos):
+                maze_generator.clicked = False
+            if create.isOver(pos):
+                pass
+                #Create the maze over here, or create a function that creates the maze and call it.
 
 
+def maze_window():
+    win.fill(BLACK)
+    maze_back.draw(win)
+    create.draw(win)
+    pygame.display.update()
 
 """
 This function sets the value of all the buttons to be true so that they cannot be clicked while the animation
@@ -417,7 +443,6 @@ def bubble_sort_alg():
                         pygame.display.update()
 
                 bubble_array[j] , bubble_array[j+1] = bubble_array[j+1], bubble_array[j]
-    all_buttons_false()
 
 """
 Creating all the variables and objects that I will be using in my program
@@ -469,6 +494,10 @@ little_button = button(RED,250,10,350,100,'little')
 medium_button = button(RED,610,10,350,100,'medium')
 a_lot_button = button(RED,970,10,350,100,'a lot')
 bubble_back = button(RED,1330,10,350,100,'back')
+
+
+maze_back = button(WHITE,10,10,350,100,'Back')
+create = button(WHITE,1550,10,350,100,'Create')
 """
 Start running to program
 """
@@ -477,6 +506,8 @@ while run:
         linked_list_window()
     elif bubble_sort.clicked:
         bubble_sort_window()
+    elif maze_generator.clicked:
+        maze_window()
     else:
         redrawWindow()
     pygame.display.update()
