@@ -1,4 +1,4 @@
-import pygame
+import pygame,sys, random
 import  time
 from random import randint
 from random import seed
@@ -7,18 +7,27 @@ pygame.init()
 """
 Creating constants that I will be using in my program
 """
+
+
+COLS = 60
+ROWS = 36
+
 LENGTH = 1920
 HEIGHT = 1080
 
+W = 15
+grid = []
+unvisited = []
 LIGHT_YELLOW = (242,208,167)
 LIGHT_PINK = (191,122,160)
 BROWN = (136,56,45)
 LIGHT_BLUE = (0,181,236)
 LIME = (204,255,0)
-PURPLE = (255,255,255)
+PURPLE = (92,60,146)
 BLACK = (0,0,0)
 WHITE = (255,255,255)
 YELLOW = (255,255,0)
+GREEN = (7,123,138)
 
 RED = (255,0,0)
 NODE_WIDTH = 100
@@ -53,15 +62,75 @@ What this class will do is that it will hold the location of that specific array
 on the window and it will have the amount as well.
 """
 
+class tree_node():
+    def __init__(self,):
+        self.amnt = None
+        self.right = None
+        self.left = None
+        self.x = None
+        self.y = None
+
 class array_attribute():
     def __init__(self,amnt,x,y):
         self.amnt = amnt
         self.x = x
         self.y = y
 
+
+class block_holder():
+    def __init__(self,block):
+        self.block = block
 """
 The function of this class is to act as an int variable so that we can change values through functions
 """
+class Block:
+    def __init__(self, x, y):
+        self.x , self.y = x,y
+        self.walls = [True,True,True,True]
+        self.visited = False
+        self.col = 10
+
+    def show(self,win):
+        x = self.x*W
+        y = self.y*W
+
+        if self.visited:
+            pygame.draw.rect(win,WHITE,(self.x*W+510,self.y*W+360,W,W))
+        if self.walls[0]:
+            pygame.draw.line(win,(0,0,0),(x+510,y+360),(x+W+510,y+360))
+        if self.walls[1]:
+            pygame.draw.line(win,(0,0,0),(x+W+510,y+360),(x+W+510,y+W+360))
+        if self.walls[2]:
+            pygame.draw.line(win,(0,0,0),(x+W+510,y+W+360),(x+510,y+W+360))
+        if self.walls[3]:
+            pygame.draw.line(win,(0,0,0),(x+510,y+W+360),(x+510,y+360))
+
+
+    def highlight(self,win):
+        x = self.x * W
+        y = self.y * W
+        if self.visited:
+            pygame.draw.rect(win,RED,(self.x * W+510,self.y * W+360, W ,W))
+
+    def checkNeighbours(self):
+        neighbours = []
+        x,y = self.x,self.y
+        if give_index(x,y-1):
+            top = grid[give_index(x,y-1)]
+            neighbours.append(top)
+        if give_index(x+1,y):
+            right = grid[give_index(x+1,y)]
+            neighbours.append(right)
+        if give_index(x-1,y):
+            left = grid[give_index(x-1,y)]
+            neighbours.append(left)
+        if give_index(x,y+1):
+            bottom = grid[give_index(x,y+1)]
+            neighbours.append(bottom)
+        if len(neighbours)>0:
+            return random.choice(neighbours)
+        else:
+            return None
 class counter():
     def __init__(self,amnt):
         self.amnt = amnt
@@ -238,6 +307,8 @@ def click_back():
     temp_x_connector.amnt = 110
     temp_y_connector.amnt = 525
 
+
+
 def over():
     if event.type == pygame.MOUSEMOTION:
         if linked_list.clicked == True:
@@ -271,7 +342,15 @@ def over():
         else:
             maze_generator.color = BROWN
 
-
+        if A_star_search_path.clicked:
+            if not(back_tree_node.clicked) and back_tree_node.isOver(pos):
+                back_tree_node.color = BROWN
+            else:
+                back_tree_node.color = WHITE
+            if not(add_tree_node.clicked) and add_tree_node.isOver(pos):
+                add_tree_node.color = BROWN
+            else:
+                add_tree_node.color = WHITE
         if bubble_sort.clicked:
             if not(little_button.clicked) and little_button.isOver(pos):
                 little_button.color = BLACK
@@ -303,13 +382,15 @@ def over():
                 create.color = YELLOW
             else:
                 create.color = WHITE
+
+
 def button_click():
     if event.type == pygame.MOUSEBUTTONDOWN:
         if not(first_node.animation):
             if back_linked_list.isOver(pos):
                 click_back()
         if A_star_search_path.isOver(pos):
-            pass
+            A_star_search_path.clicked = True
         if bubble_sort.isOver(pos):
             bubble_sort.clicked = True
         if linked_list.isOver(pos):
@@ -333,6 +414,11 @@ def button_click():
                         temp_x_connector.amnt = 110
                         temp_x_connector_first.amnt = temp_x_connector.amnt
 
+        if A_star_search_path.clicked:
+            if back_tree_node.isOver(pos):
+                A_star_search_path.clicked = False
+            if add_tree_node.isOver(pos):
+                add_node(int(input("Please type in the number that you would like: ")))
         #If we are in the bubble sort menu
         if bubble_sort.clicked:
             if not(bubble_back.clicked) and bubble_back.isOver(pos):
@@ -357,16 +443,59 @@ def button_click():
         if maze_generator.clicked:
             if maze_back.isOver(pos):
                 maze_generator.clicked = False
+                create.clicked = False
+                disable()
             if create.isOver(pos):
-                pass
-                #Create the maze over here, or create a function that creates the maze and call it.
+                disable()
+                create.clicked = True
 
 
-def maze_window():
+def disable():
+    del unvisited[:]
+    del grid[:]
+    for j in range(ROWS):
+        for i in range(COLS):
+            block = Block(i, j)
+            unvisited.append(block)
+            grid.append(block)
+    n = 0
+    current.block = grid[n]
+
+
+def maze_window(current):
     win.fill(BLACK)
     maze_back.draw(win)
     create.draw(win)
-    pygame.display.update()
+    if create.clicked:
+
+        for block in grid:
+            block.show(win)
+        current.block.visited = True
+        for block in unvisited:
+            if block == current:
+                unvisited.remove(block)
+        current.block.highlight(win)
+        check = False
+        for x in unvisited:
+            if not (x.visited):
+                check = True
+                break
+        if check:
+            next_block = current.block.checkNeighbours()
+            if isinstance(next_block, Block) and not next_block.visited:
+                wall_removal(current.block, next_block)
+                next_block.visited = True
+            current.block = next_block
+        pygame.display.update()
+
+
+
+
+def give_index(x,y):
+    if x < 0 or y < 0 or x > COLS -1 or y > ROWS - 1:
+        return None
+    else:
+        return x + y * COLS
 
 """
 This function sets the value of all the buttons to be true so that they cannot be clicked while the animation
@@ -444,6 +573,61 @@ def bubble_sort_alg():
 
                 bubble_array[j] , bubble_array[j+1] = bubble_array[j+1], bubble_array[j]
 
+
+def wall_removal(a,b):
+    x = a.x - b.x
+    if x == 1:
+        a.walls[3] = False
+        b.walls[1] = False
+    elif x == -1:
+        a.walls[1] = False
+        b.walls[3] = False
+    y = a.y-b.y
+    if y == 1:
+        a.walls[0] = False
+        b.walls[2] = False
+    elif y == -1:
+        a.walls[2] = False
+        b.walls[0] = False
+
+"""
+All these functions will be related to the tree node
+"""
+def a_star_window():
+    win.fill(BLACK)
+    back_tree_node.draw(win)
+    add_tree_node.draw(win)
+
+
+def draw_tree():
+    temp_node = first_tree_node
+
+    pygame.display.update()
+
+def add_node(temp):
+    temp_node = first_tree_node
+    while True:
+        if temp.amnt == None:
+            first_tree_node.amnt = temp
+        else:
+            if temp_node.amnt < temp:
+                if temp_node.right != None:
+                    temp_node = temp_node.right
+                else:
+                    if temp_node.x + 150 < 1080 and temp_node.y + 150 < 1920:
+                        tree = tree_node()
+                        tree.amnt = temp
+                        tree.x = temp_node.x+50
+                        tree.y = temp_node.y+50
+                        temp_node.right = tree
+                    
+            elif temp.amnt > temp:
+                if temp_node.left != None:
+                    temp_node = temp_node.left
+                else:
+                    tree = tree_node()
+                    tree.amnt = temp
+                    temp_node.left = tree
 """
 Creating all the variables and objects that I will be using in my program
 """
@@ -456,6 +640,8 @@ bubble_sort = button(BROWN,500,900,350,100,'Bubble Sort')
 linked_list = button(BROWN,1000,900,350,100,'linked list')
 maze_generator = button(BROWN,1000,600,350,100,'maze generator')
 
+
+#A_star_back = button()
 
 remove_linked_list = button(LIME,785,950,350,100,'Remove')
 
@@ -498,6 +684,23 @@ bubble_back = button(RED,1330,10,350,100,'back')
 
 maze_back = button(WHITE,10,10,350,100,'Back')
 create = button(WHITE,1550,10,350,100,'Create')
+
+"""
+All these variables will be related to the tree node
+"""
+first_tree_node = tree_node()
+back_tree_node = button(WHITE,10,10,350,100,'Back')
+add_tree_node = button(WHITE,1550,10,350,100,'Add')
+
+"""
+"""
+for j in range(ROWS):
+    for i in range(COLS):
+        block = Block(i,j)
+        grid.append(block)
+        unvisited.append(block)
+n = 0
+current = block_holder(grid[n])
 """
 Start running to program
 """
@@ -507,7 +710,9 @@ while run:
     elif bubble_sort.clicked:
         bubble_sort_window()
     elif maze_generator.clicked:
-        maze_window()
+        maze_window(current)
+    elif A_star_search_path.clicked:
+        a_star_window()
     else:
         redrawWindow()
     pygame.display.update()
