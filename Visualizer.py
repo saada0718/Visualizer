@@ -419,7 +419,10 @@ def button_click():
             if back_tree_node.isOver(pos):
                 A_star_search_path.clicked = False
             if add_tree_node.isOver(pos):
-                add_node(int(input("Please type in the number that you would like: ")))
+                if not(add_node(int(input("Please type in the number that you would like: ")))):
+                    print("The number already exists")
+                else:
+                    print(first_tree_node.amnt)
         #If we are in the bubble sort menu
         if bubble_sort.clicked:
             if not(bubble_back.clicked) and bubble_back.isOver(pos):
@@ -606,6 +609,9 @@ def draw_tree():
     pygame.display.update()
 
 def add_node(temp):
+    if first_tree_node.amnt == None:
+        first_tree_node.amnt = temp
+        return True
     temp_node = first_tree_node
     p = None
     while temp_node != None:
@@ -615,8 +621,15 @@ def add_node(temp):
         elif temp_node.amnt < temp:
             p = temp_node
             temp_node = temp_node.right
+        else:
+            return False
     if p.amnt < temp:
-        p.right = tree_node()
+        p.right = tree_node(temp)
+    elif p.amnt > temp:
+        p.left = tree_node(temp)
+
+    return True
+
 """
 Creating all the variables and objects that I will be using in my program
 """
