@@ -63,10 +63,11 @@ on the window and it will have the amount as well.
 """
 
 class tree_node():
-    def __init__(self,):
-        self.amnt = None
-        self.right = None
-        self.left = None
+    def __init__(self,amnt=None,right=None,left=None,parent=None):
+        self.amnt = amnt
+        self.right = right
+        self.left = left
+        self.parent = parent
 
 
 
@@ -606,28 +607,16 @@ def draw_tree():
 
 def add_node(temp):
     temp_node = first_tree_node
-    while True:
-        if temp.amnt == None:
-            first_tree_node.amnt = temp
-        else:
-            if temp_node.amnt < temp:
-                if temp_node.right != None:
-                    temp_node = temp_node.right
-                else:
-                    if temp_node.x + 150 < 1080 and temp_node.y + 150 < 1920:
-                        tree = tree_node()
-                        tree.amnt = temp
-                        tree.x = temp_node.x+50
-                        tree.y = temp_node.y+50
-                        temp_node.right = tree
-
-            elif temp.amnt > temp:
-                if temp_node.left != None:
-                    temp_node = temp_node.left
-                else:
-                    tree = tree_node()
-                    tree.amnt = temp
-                    temp_node.left = tree
+    p = None
+    while temp_node != None:
+        if temp_node.amnt > temp:
+            p = temp_node
+            temp_node  = temp_node.left
+        elif temp_node.amnt < temp:
+            p = temp_node
+            temp_node = temp_node.right
+    if p.amnt < temp:
+        p.right = tree_node()
 """
 Creating all the variables and objects that I will be using in my program
 """
