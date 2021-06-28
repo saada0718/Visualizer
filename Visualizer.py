@@ -67,8 +67,8 @@ class tree_node():
         self.amnt = None
         self.right = None
         self.left = None
-        self.x = None
-        self.y = None
+
+
 
 class array_attribute():
     def __init__(self,amnt,x,y):
@@ -593,7 +593,7 @@ def wall_removal(a,b):
 """
 All these functions will be related to the tree node
 """
-def a_star_window():
+def tree_window():
     win.fill(BLACK)
     back_tree_node.draw(win)
     add_tree_node.draw(win)
@@ -620,7 +620,7 @@ def add_node(temp):
                         tree.x = temp_node.x+50
                         tree.y = temp_node.y+50
                         temp_node.right = tree
-                    
+
             elif temp.amnt > temp:
                 if temp_node.left != None:
                     temp_node = temp_node.left
@@ -712,7 +712,7 @@ while run:
     elif maze_generator.clicked:
         maze_window(current)
     elif A_star_search_path.clicked:
-        a_star_window()
+        tree_window()
     else:
         redrawWindow()
     pygame.display.update()
