@@ -352,6 +352,10 @@ def over():
                 add_tree_node.color = BROWN
             else:
                 add_tree_node.color = WHITE
+            if not(remove_button.clicked) and remove_button.isOver(pos):
+                remove_button.color = BROWN
+            else:
+                remove_button.color = WHITE
         if bubble_sort.clicked:
             if not(little_button.clicked) and little_button.isOver(pos):
                 little_button.color = BLACK
@@ -420,6 +424,9 @@ def button_click():
                 remove_tree_node(int(input("Please type the number that you would like to remove: ")))
             if back_tree_node.isOver(pos):
                 A_star_search_path.clicked = False
+                first_tree_node.right = None
+                first_tree_node.left = None
+                first_tree_node.amnt = None
             if add_tree_node.isOver(pos):
                 amnt_add = int(input("Please type in the number that you would like: "))
                 if amnt_add < 10000 and amnt_add>=0:
@@ -618,11 +625,15 @@ def tree_window():
 def draw_tree(first,second,t):
     if t.amnt != None:
         pygame.draw.rect(win,YELLOW,(first,second,100,100),0)
+        myfont = pygame.font.SysFont('Comic Sans MS',30)
+        textSurface = myfont.render(str(t.amnt),False,BLACK)
+        win.blit(textSurface,(first+20,second+20))
     if t.right != None:
+        pygame.draw.line(win,WHITE, [first+100,second+100],[first+150,second+150],10)
         draw_tree(first+150,second+150,t.right)
     if t.left != None:
+        pygame.draw.line(win,WHITE,[first,second+100],[first-50,second+150],10)
         draw_tree(first-150,second+150,t.left)
-
 
 def remove_tree_node(num):
 
@@ -634,56 +645,46 @@ def remove_tree_node(num):
             t = t.left
         elif t.amnt == num:
 
-            if t == first_tree_node:
-                if t.left!= None:
-            if t.right == None and t.left == None:
-                if first_tree_node == t:
-                    first_tree_node.amnt = None
-                elif t.parent.right == t:
-                    t.parent.right = None
-                elif t.parent.left == t:
-                    t.parent.left = None
 
-
-
-
-
-            elif (t.right != None and t.left == None) or (t.right == None and t.left != None):
-
-
-
-                if t.left == None:
-                    t.right.parent = t.parent
-                    if t.parent.left == t:
-                        t.parent.left = t.right
-                    elif t.parent.right == t:
-                        t.parent.right = t.right
-                else:
-                    holder = t.left
-                    while holder.right!= None:
-                        holder = holder.right
-                    if holder != t.left:
-                        holder.parent.right = None
-                        holder.left = t.left
-                        t.parent.left = holder
-                    else:
-                        t.left.parent = t.parent
-                        t.parent.left = holder
-
-            elif t.right != None and t.left != None:
+            if t.right != None and t.left != None:
                 holder = t.left
                 while holder.right != None:
                     holder = holder.right
-                if holder != t.left:
+                if holder == t.left:
+                    t.amnt = holder.amnt
+                    if holder.left != None:
+                        holder.left.parent = t
+                    t.left = holder.left
+                else:
                     holder.parent.right = holder.left
-                    holder.right = t.right
-                    holder.parent = t.parent
-                    holder.left = t.left
+                    t.amnt = holder.amnt
 
-                    if holder.parent.right == t:
-                        holder.parent.right = t
-                    else:
-                        holder.parent.left = t
+            elif (t.right != None and t.left == None):
+                t.amnt = t.right.amnt
+                t.left = t.right.left
+                if t.right.right!= None:
+                    t.right.right.parent = t
+                t.right = t.right.right
+
+            elif (t.left != None and t.right == None):
+                holder = t.left
+                while holder.right != None:
+                    holder = holder.right
+                if holder == t.left:
+                    t.amnt = t.left.amnt
+                    if t.left.left!= None:
+                        t.left.parent = t.left
+                    t.left = t.left.left
+                else:
+                    holder.parent.right = holder.left
+                    t.amnt = holder.amnt
+            elif t.right == None and t.left == None:
+                if t == first_tree_node:
+                    first_tree_node.amnt = None
+                elif t == t.parent.right:
+                    t.parent.right = None
+                elif t == t.parent.left:
+                    t.parent.left = None
             return True
     return False
 def add_node(temp):
