@@ -37,14 +37,17 @@ GREEN = (7,123,138)
 DARK_GREEN = (53,98,68)
 RED = (255,0,0)
 
-
+#Node width and height
 NODE_WIDTH = 100
 NODE_HEIGHT = 50
 
+
+#different lengths of array
 LITTLE = 5
 MIDDLE = 7
 A_LOT = 10
 
+#Arrow height and array
 ARROW_HEIGHT = 50
 ARROW_LENGTH = 100
 
@@ -268,7 +271,9 @@ def draw_arrow(amount):
         next_stop.animation = False
 
 
-
+"""
+This draws the linked list window with all the buttons.
+"""
 def linked_list_window():
     win.fill(LIGHT_BLUE)
     back_linked_list.draw(win)
@@ -315,7 +320,9 @@ def click_back():
     temp_y_connector.amnt = 525
 
 
-
+"""
+This function checks if the cursor over the button. When the cursor is over the button then it changes the colour of the button.
+"""
 def over():
     if event.type == pygame.MOUSEMOTION:
         if linked_list.clicked == True:
@@ -394,7 +401,9 @@ def over():
             else:
                 create.color = WHITE
 
-
+"""
+This function is used to check if the buttons are clicked or not. If they are certain actions are performed.
+"""
 def button_click():
     if event.type == pygame.MOUSEBUTTONDOWN:
         if not(first_node.animation):
