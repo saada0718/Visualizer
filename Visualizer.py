@@ -416,13 +416,19 @@ def button_click():
                         temp_x_connector_first.amnt = temp_x_connector.amnt
 
         if A_star_search_path.clicked:
+            if remove_button.isOver(pos):
+                remove_tree_node(int(input("Please type the number that you would like to remove: ")))
             if back_tree_node.isOver(pos):
                 A_star_search_path.clicked = False
             if add_tree_node.isOver(pos):
-                if not(add_node(int(input("Please type in the number that you would like: ")))):
-                    print("The number already exists")
+                amnt_add = int(input("Please type in the number that you would like: "))
+                if amnt_add < 10000 and amnt_add>=0:
+                    if not(add_node(amnt_add)):
+                        print("The number already exists")
+                    else:
+                        print(first_tree_node.amnt)
                 else:
-                    print(first_tree_node.amnt)
+                    print("The number that you entered is does not meet the requirements! Please enter a number between 0-9999 (inclusive)")
         #If we are in the bubble sort menu
         if bubble_sort.clicked:
             if not(bubble_back.clicked) and bubble_back.isOver(pos):
@@ -597,17 +603,89 @@ def wall_removal(a,b):
 """
 All these functions will be related to the tree node
 """
+
+
 def tree_window():
     win.fill(BLACK)
     back_tree_node.draw(win)
     add_tree_node.draw(win)
-
-
-def draw_tree():
-    temp_node = first_tree_node
-
+    remove_button.draw(win)
+    t = first_tree_node
+    draw_tree(910,150,t)
     pygame.display.update()
 
+
+def draw_tree(first,second,t):
+    if t.amnt != None:
+        pygame.draw.rect(win,YELLOW,(first,second,100,100),0)
+    if t.right != None:
+        draw_tree(first+150,second+150,t.right)
+    if t.left != None:
+        draw_tree(first-150,second+150,t.left)
+
+
+def remove_tree_node(num):
+
+    t = first_tree_node
+    while t != None:
+        if t.amnt < num:
+            t = t.right
+        elif t.amnt > num:
+            t = t.left
+        elif t.amnt == num:
+
+            if t == first_tree_node:
+                if t.left!= None:
+            if t.right == None and t.left == None:
+                if first_tree_node == t:
+                    first_tree_node.amnt = None
+                elif t.parent.right == t:
+                    t.parent.right = None
+                elif t.parent.left == t:
+                    t.parent.left = None
+
+
+
+
+
+            elif (t.right != None and t.left == None) or (t.right == None and t.left != None):
+
+
+
+                if t.left == None:
+                    t.right.parent = t.parent
+                    if t.parent.left == t:
+                        t.parent.left = t.right
+                    elif t.parent.right == t:
+                        t.parent.right = t.right
+                else:
+                    holder = t.left
+                    while holder.right!= None:
+                        holder = holder.right
+                    if holder != t.left:
+                        holder.parent.right = None
+                        holder.left = t.left
+                        t.parent.left = holder
+                    else:
+                        t.left.parent = t.parent
+                        t.parent.left = holder
+
+            elif t.right != None and t.left != None:
+                holder = t.left
+                while holder.right != None:
+                    holder = holder.right
+                if holder != t.left:
+                    holder.parent.right = holder.left
+                    holder.right = t.right
+                    holder.parent = t.parent
+                    holder.left = t.left
+
+                    if holder.parent.right == t:
+                        holder.parent.right = t
+                    else:
+                        holder.parent.left = t
+            return True
+    return False
 def add_node(temp):
     if first_tree_node.amnt == None:
         first_tree_node.amnt = temp
@@ -625,9 +703,10 @@ def add_node(temp):
             return False
     if p.amnt < temp:
         p.right = tree_node(temp)
+        p.right.parent = p
     elif p.amnt > temp:
         p.left = tree_node(temp)
-
+        p.left.parent = p
     return True
 
 """
@@ -693,6 +772,7 @@ All these variables will be related to the tree node
 first_tree_node = tree_node()
 back_tree_node = button(WHITE,10,10,350,100,'Back')
 add_tree_node = button(WHITE,1550,10,350,100,'Add')
+remove_button = button(WHITE,785,10,350,100,'Remove')
 
 """
 """
